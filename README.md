@@ -11,13 +11,13 @@
 ## Install
 
 ```sh
-npm install
+expo install
 ```
 
 ## Usage
 
 ```sh
-npm run start
+expo start
 ```
 
 ## Author
@@ -26,11 +26,8 @@ npm run start
 
 * Twitter: [@yashkalavadiya1](https://twitter.com/yashkalavadiya1)
 * Github: [@yash10102002](https://github.com/yash10102002)
-* LinkedIn: [@yash kalavadiya](https://linkedin.com/in/yash kalavadiya)
+* LinkedIn: [@yash kalavadiya](https://linkedin.com/in/yash-kalavadiya-789141170)
 
 ## Show your support
 
 Give a ⭐️ if this project helped you!
-
-***
-_This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_
