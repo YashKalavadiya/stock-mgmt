@@ -30,6 +30,7 @@ const Routes = () => {
       border: "#14213d",
       notification: "#9933FF",
       productCard: "#242B2E",
+      activeButton: "#51E1ED",
     },
   };
   const MyLightTheme = {
@@ -38,6 +39,7 @@ const Routes = () => {
       ...DefaultTheme.colors,
       card: "#fff",
       productCard: "#e9ecef",
+      activeButton: "#F4CE6A",
     },
   };
 

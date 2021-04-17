@@ -19,6 +19,7 @@ import {
   searchItem,
   setNewProductStock,
   setNewSearchItems,
+  sortProducts,
 } from "../redux/product/productAction";
 import {
   Body,
@@ -36,6 +37,14 @@ import {
   Toast,
 } from "native-base";
 import SearchNotFound from "./Reusables/assets/SearchNotFound";
+import {
+  SORT_BY_PRODUCT_ID_ASC,
+  SORT_BY_PRODUCT_ID_DEC,
+  SORT_BY_PRODUCT_NAME_ASC,
+  SORT_BY_PRODUCT_NAME_DEC,
+  SORT_BY_PRODUCT_QUANTITY_ASC,
+  SORT_BY_PRODUCT_QUANTITY_DEC,
+} from "../redux/product/productTypes";
 
 export default function Home({ navigation, toggleTheme, isEnabled }) {
   const { colors } = useTheme();
@@ -47,6 +56,7 @@ export default function Home({ navigation, toggleTheme, isEnabled }) {
   const [newQuantityValue, setNewQuantityValue] = React.useState("1");
   const [currentFilterTask, setCurrentFilterTask] = React.useState(null);
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [currentlySortedBy, setCurrentlySortedBy] = React.useState(null);
 
   useEffect(() => {
     fetchProducts(dispatch, userId);
@@ -192,6 +202,15 @@ export default function Home({ navigation, toggleTheme, isEnabled }) {
     dispatch(setNewSearchItems(itemsFound));
   };
 
+  const handleSortTypeChange = (type) => {
+    setCurrentlySortedBy(type);
+    dispatch(sortProducts(searchedItems, type, products));
+  };
+
+  useEffect(() => {
+    console.log(currentlySortedBy);
+  }, [currentlySortedBy]);
+
   const ProductCard = ({ product, idx }) => (
     <Card
       style={{
@@ -214,6 +233,9 @@ export default function Home({ navigation, toggleTheme, isEnabled }) {
             </Text>
             <Text note style={{ color: colors.text }}>
               ID: {product.productId}
+            </Text>
+            <Text note style={{ color: colors.text }}>
+              {product.description}
             </Text>
           </Body>
         </Left>
@@ -436,11 +458,182 @@ export default function Home({ navigation, toggleTheme, isEnabled }) {
             </Item>
           </View>
         )}
+
+        {/* =================================Sort Buttons Goes Here================================= */}
         {currentFilterTask === "sort" ? (
-          <View style={{ ...styles.searchContainer }}>
-            <Text style={{ color: colors.text, fontSize: 30 }}>
-              Sort Things
-            </Text>
+          <View
+            style={{
+              ...styles.searchContainer,
+              marginHorizontal: 4,
+              marginVertical: 2,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+            }}
+          >
+            <Button
+              iconLeft
+              transparent
+              style={{
+                backgroundColor:
+                  currentlySortedBy === SORT_BY_PRODUCT_NAME_DEC
+                    ? colors.activeButton
+                    : colors.text,
+                borderColor: colors.notification,
+                padding: 5,
+                marginVertical: 4,
+              }}
+              bordered
+              rounded
+              onPress={(e) => {
+                handleSortTypeChange(SORT_BY_PRODUCT_NAME_DEC);
+              }}
+            >
+              <Icon
+                name="sort-alpha-desc"
+                type="FontAwesome"
+                style={{ color: colors.background }}
+              />
+              <Text style={{ color: colors.background, marginHorizontal: 4 }}>
+                Product Name
+              </Text>
+            </Button>
+            <Button
+              iconLeft
+              transparent
+              style={{
+                backgroundColor:
+                  currentlySortedBy === SORT_BY_PRODUCT_NAME_ASC
+                    ? colors.activeButton
+                    : colors.text,
+                borderColor: colors.notification,
+                padding: 5,
+                marginVertical: 4,
+              }}
+              bordered
+              rounded
+              onPress={() => {
+                handleSortTypeChange(SORT_BY_PRODUCT_NAME_ASC);
+              }}
+            >
+              <Icon
+                name="sort-alpha-asc"
+                type="FontAwesome"
+                style={{ color: colors.background }}
+              />
+              <Text style={{ color: colors.background, marginHorizontal: 4 }}>
+                Product Name
+              </Text>
+            </Button>
+            <Button
+              iconLeft
+              transparent
+              style={{
+                backgroundColor:
+                  currentlySortedBy === SORT_BY_PRODUCT_ID_DEC
+                    ? colors.activeButton
+                    : colors.text,
+                borderColor: colors.notification,
+                padding: 5,
+                marginVertical: 4,
+              }}
+              bordered
+              rounded
+              onPress={() => {
+                handleSortTypeChange(SORT_BY_PRODUCT_ID_DEC);
+              }}
+            >
+              <Icon
+                name="sort-alpha-desc"
+                type="FontAwesome"
+                style={{ color: colors.background }}
+              />
+              <Text style={{ color: colors.background, marginHorizontal: 4 }}>
+                Product ID
+              </Text>
+            </Button>
+            <Button
+              iconLeft
+              transparent
+              style={{
+                backgroundColor:
+                  currentlySortedBy === SORT_BY_PRODUCT_ID_ASC
+                    ? colors.activeButton
+                    : colors.text,
+                borderColor: colors.notification,
+                padding: 5,
+                marginVertical: 4,
+              }}
+              bordered
+              rounded
+              onPress={() => {
+                handleSortTypeChange(SORT_BY_PRODUCT_ID_ASC);
+              }}
+            >
+              <Icon
+                name="sort-alpha-asc"
+                type="FontAwesome"
+                style={{ color: colors.background }}
+              />
+              <Text style={{ color: colors.background, marginHorizontal: 4 }}>
+                Product ID
+              </Text>
+            </Button>
+            <Button
+              iconLeft
+              transparent
+              style={{
+                backgroundColor:
+                  currentlySortedBy === SORT_BY_PRODUCT_QUANTITY_DEC
+                    ? colors.activeButton
+                    : colors.text,
+                borderColor: colors.notification,
+                padding: 5,
+                marginVertical: 4,
+              }}
+              bordered
+              rounded
+              onPress={() => {
+                handleSortTypeChange(SORT_BY_PRODUCT_QUANTITY_DEC);
+              }}
+            >
+              <Icon
+                name="sort-numeric-desc"
+                type="FontAwesome"
+                style={{ color: colors.background }}
+              />
+              <Text style={{ color: colors.background, marginHorizontal: 4 }}>
+                Product Quantity
+              </Text>
+            </Button>
+            <Button
+              iconLeft
+              transparent
+              style={{
+                backgroundColor:
+                  currentlySortedBy === SORT_BY_PRODUCT_QUANTITY_ASC
+                    ? colors.activeButton
+                    : colors.text,
+                borderColor: colors.notification,
+                padding: 5,
+                marginVertical: 4,
+              }}
+              bordered
+              rounded
+              onPress={() => {
+                handleSortTypeChange(SORT_BY_PRODUCT_QUANTITY_ASC);
+              }}
+            >
+              <Icon
+                name="sort-numeric-asc"
+                type="FontAwesome"
+                style={{ color: colors.background }}
+              />
+              <Text style={{ color: colors.background, marginHorizontal: 4 }}>
+                Product Quantity
+              </Text>
+            </Button>
           </View>
         ) : null}
       </View>

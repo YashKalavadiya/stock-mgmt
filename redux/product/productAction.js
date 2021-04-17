@@ -6,6 +6,12 @@ import {
   INCREMENT_PRODUCT_STOCK,
   NEW_PRODUCT_STOCK,
   SET_SEARCH_ITEMS,
+  SORT_BY_PRODUCT_ID_ASC,
+  SORT_BY_PRODUCT_ID_DEC,
+  SORT_BY_PRODUCT_NAME_ASC,
+  SORT_BY_PRODUCT_NAME_DEC,
+  SORT_BY_PRODUCT_QUANTITY_ASC,
+  SORT_BY_PRODUCT_QUANTITY_DEC,
 } from "./productTypes";
 import firebase from "firebase";
 import "firebase/firestore";
@@ -84,13 +90,79 @@ export const setNewSearchItems = (items) => {
   };
 };
 
+const sortArray = (arr, type, prop) => {
+  if (type === "ASC") {
+    arr.sort((a, b) => {
+      if (a[prop] > b[prop]) {
+        return 1;
+      }
+      if (a[prop] < b[prop]) {
+        return -1;
+      }
+      return 0;
+    });
+  } else {
+    arr.sort((a, b) => {
+      if (a[prop] < b[prop]) {
+        return 1;
+      }
+      if (a[prop] > b[prop]) {
+        return -1;
+      }
+      return 0;
+    });
+  }
+  return arr;
+};
+
+export const sortProducts = (allItems, type, dafaultProducts) => {
+  let arr = [];
+  switch (type) {
+    case SORT_BY_PRODUCT_NAME_ASC:
+      arr = sortArray(allItems, "ASC", "productName");
+      return {
+        type: SET_SEARCH_ITEMS,
+        payload: arr,
+      };
+    case SORT_BY_PRODUCT_NAME_DEC:
+      arr = sortArray(allItems, "DEC", "productName");
+      return {
+        type: SET_SEARCH_ITEMS,
+        payload: arr,
+      };
+    case SORT_BY_PRODUCT_ID_ASC:
+      arr = sortArray(allItems, "ASC", "productId");
+      return {
+        type: SET_SEARCH_ITEMS,
+        payload: arr,
+      };
+    case SORT_BY_PRODUCT_ID_DEC:
+      arr = sortArray(allItems, "DEC", "productId");
+      return {
+        type: SET_SEARCH_ITEMS,
+        payload: arr,
+      };
+    case SORT_BY_PRODUCT_QUANTITY_ASC:
+      arr = sortArray(allItems, "ASC", "quantity");
+      return {
+        type: SET_SEARCH_ITEMS,
+        payload: arr,
+      };
+    case SORT_BY_PRODUCT_QUANTITY_DEC:
+      arr = sortArray(allItems, "DEC", "quantity");
+      return {
+        type: SET_SEARCH_ITEMS,
+        payload: arr,
+      };
+    case "RESET":
+      return {
+        type: SET_SEARCH_ITEMS,
+        payload: dafaultProducts,
+      };
+  }
+};
+
 export const searchItem = (item, allItems) => {
-  // let foundItems = [];
-  // allItems.forEach((d,i) => {
-  //   if(d.productName.toUpperCase().indexOf(item.toUpperCase()) > -1 || d.productId.toUpperCase().indexOf(item.toUpperCase()) > -1){
-  //     foundItems.push(d);
-  //   }
-  // })
   let foundItems = allItems.filter((d) => {
     if (
       d.productName.toUpperCase().indexOf(item) > -1 ||
