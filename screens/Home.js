@@ -1,6 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useRef } from "react";
 import {
+  Alert,
   Animated,
   FlatList,
   RefreshControl,
@@ -195,6 +196,42 @@ export default function Home({ navigation, toggleTheme, isEnabled }) {
     }
   };
 
+  const deleteProduct = (docName, fileName, ext) => {
+    Alert.alert(
+      "Caution!!",
+      "Are you sure you want to permanently delete this product?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            setRefreshing(true);
+            await firebase
+              .storage()
+              .ref(`productImages`)
+              .child(userId)
+              .child(`${fileName}.${ext}`)
+              .delete();
+            await firebase.firestore().collection(userId).doc(docName).delete();
+            fetchProducts(dispatch, userId).then(() => {
+              setRefreshing(false);
+              Toast.show({
+                text: "Deleted",
+                swipeDisabled: false,
+                type: "success",
+              });
+            });
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const handleSearchTermChange = (term) => {
     setSearchTerm(term);
     let itemsFound = searchItem(term.toUpperCase(), products);
@@ -239,6 +276,24 @@ export default function Home({ navigation, toggleTheme, isEnabled }) {
             </Text>
           </Body>
         </Left>
+        <Right>
+          <TouchableOpacity
+            onPress={(e) => {
+              deleteProduct(
+                product.docName,
+                product.fileName,
+                product.fileExtension
+              );
+            }}
+          >
+            <Icon
+              active
+              name="delete"
+              type="MaterialCommunityIcons"
+              style={{ color: colors.text }}
+            />
+          </TouchableOpacity>
+        </Right>
       </CardItem>
       {isQuantityChanging === product.docName ? (
         <CardItem style={{ backgroundColor: "transparent" }}>

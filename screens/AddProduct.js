@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import firebase from "firebase";
 import {
@@ -41,10 +42,12 @@ export default function AddProduct({ navigation }) {
   });
   const [isUploading, setIsUploading] = useState(false);
   const user = useSelector((state) => state.user);
+  const loading = useSelector((state) => state.products.loading);
   const dispatch = useDispatch();
 
   const openPicker = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    let permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert("Permission to access camera roll is required!");
@@ -63,7 +66,8 @@ export default function AddProduct({ navigation }) {
     });
   };
   const openCamera = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    let permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert("Permission to access camera roll is required!");
@@ -113,7 +117,7 @@ export default function AddProduct({ navigation }) {
     //close blob
     blob.close();
     let url = await snapshot.ref.getDownloadURL();
-    return url;
+    return { url, fileExtension };
   };
 
   const saveProduct = async () => {
@@ -131,21 +135,25 @@ export default function AddProduct({ navigation }) {
       const storageRef = firebase.storage().ref();
       const docName = v4();
       const dbRef = firebase.firestore().collection(user.userId).doc(docName);
-      const downloadUrl = await uploadImageAsync(uri, storageRef, fileName);
+      const { url, fileExtension } = await uploadImageAsync(
+        uri,
+        storageRef,
+        fileName
+      );
       let obj = {
         productId,
         description,
         productName,
         quantity,
-        downloadUrl,
+        downloadUrl: url,
         fileName,
         docName,
+        fileExtension,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
       dbRef
         .set(Object.assign({}, obj))
         .then(() => {
-          console.log("Successful");
           setData({
             ...data,
             description: "",
@@ -159,6 +167,7 @@ export default function AddProduct({ navigation }) {
             swipeDisabled: false,
             type: "success",
           });
+          setIsUploading(false);
           fetchProducts(dispatch, user.userId);
           navigation.navigate("home");
         })
@@ -338,7 +347,11 @@ export default function AddProduct({ navigation }) {
               saveProduct();
             }}
           >
-            <Text style={{ ...styles.buttonText }}>Add Product</Text>
+            {isUploading ? (
+              <ActivityIndicator size="small" color={colors.text} />
+            ) : (
+              <Text style={{ ...styles.buttonText }}>Add Product</Text>
+            )}
           </Button>
         </Form>
       </View>
